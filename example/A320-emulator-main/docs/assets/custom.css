@@ -1,0 +1,201 @@
+/* =============================== Header =============================== */
+.md-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 90px;
+  padding: 0 20px;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Inner container aligns logo, title, and buttons */
+.md-header__inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+}
+
+/* Logo sizing */
+.md-header__button.md-logo img {
+  height: 60px;
+  width: auto;
+  margin-right: 15px;
+}
+
+/* Site title */
+.md-header__title {
+  display: inline-block;
+  margin-top: 20px; /* shift down */
+  font-size: 2.5em;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+  margin-right: 20px;
+}
+
+/* Container for Home/About buttons */
+.custom-header-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Style for Home/About buttons */
+.custom-header-buttons .custom-button,
+.md-header .custom-button {
+  display: inline-block;
+  background-color: transparent !important;
+  color: white;
+  padding: 20px 40px;
+  font-size: 1.8em;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.custom-button:hover {
+  color: #005bbb !important;
+  background-color: transparent !important;
+}
+
+/* Hide all default Material dropdown menus */
+.md-header-nav__button,
+.md-header-nav__menu,
+.md-header-nav {
+  display: none !important;
+}
+
+/* =============================== Hero Section =============================== */
+.hero-section {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  z-index: 1;
+  background-image: url('assets/images/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero-section h1,
+.hero-section h2,
+.hero-section p {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+}
+
+/* =============================== Main Content =============================== */
+.md-sidebar {
+  display: none !important;
+}
+
+.md-main,
+.md-content,
+.md-typeset {
+  margin-left: 0 !important;
+  padding-top: 0px;
+  background-color: #212536 !important;
+  color: #ffffff !important;
+  position: relative;
+  z-index: 2; /* ensure content is above hero background */
+}
+
+/* Make all main headings white */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  color: #ffffff !important;
+}
+
+/* Optional: center the main H1 */
+.md-typeset h1 {
+  text-align: center;
+  font-size: 3em;
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+/* =============================== Animations =============================== */
+/* Scroll-triggered animation */
+.animated-text {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+}
+
+.animated-text.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =============================== Footer =============================== */
+.footer-banner {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  background-color: #000000;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px 20px;
+}
+
+.footer-banner a {
+  color: #005bbb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer-banner a:hover {
+  text-decoration: underline;
+}
+
+.footer-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.md-footer {
+  display: none !important;
+}
+
+/* =============================== Logo Spin =============================== */
+.header-logo {
+  transition: transform 0.5s ease-in-out;
+}
+
+.header-logo:hover {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Header/footer link hover */
+.md-header .custom-button:hover,
+.footer-banner a:hover {
+  color: #b6b6b8 !important;
+  background-color: transparent !important;
+  text-decoration: none;
+}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVHS Physics Club</title>
+<meta name="description" content="Amador Valley High School Physics Club — weekly meetings, demos, competitions, and builds. All experience levels welcome.">
+<link rel="icon" href="assets/images/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- The hero only becomes a fixed, collapsing bar if JS is there to drive it.
+     Without this class it stays an ordinary block at the top of the page. -->
+<script>document.documentElement.className += " js";</script>
+<noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+</head>
+<body id="top">
+
+<!-- ============================ HERO / HEADER ============================ -->
+<!-- Starts as a full-screen hero, then collapses into the fixed top bar as you scroll. -->
+<header class="hero" id="hero">
+  <div class="hero-photo"></div>
+  <div class="hero-wash"></div>
+
+  <a class="hero-logo" href="#top" aria-label="AVHS Physics Club — back to top">
+    <img src="assets/images/logo.png" alt="AVHS Physics Club logo: a seal balancing an apple on its head">
+  </a>
+
+  <h1 class="hero-title">AVHS Physics Club</h1>
+  <span class="bar-title" aria-hidden="true">
+    <span class="bar-title-full">AVHS Physics Club</span>
+    <span class="bar-title-short">AVHS Physics</span>
+  </span>
+
+  <!-- The quote is swapped for a random one by script.js on each load. The one
+       written here is the no-JS fallback; edit the list in script.js to change
+       what rotates. -->
+  <p class="hero-tagline">
+    <span class="hero-school">Amador Valley High School</span>
+    <span class="hero-quote" id="hero-quote">
+      <q class="quote-text">We must know. We will know.</q>
+      <span class="quote-author">David Hilbert</span>
+    </span>
+  </p>
+
+  <nav class="hero-nav" aria-label="Main">
+    <a href="#about">About</a>
+    <a href="#events">Events</a>
+    <a href="#projects">Projects</a>
+    <a href="#tutoring">Tutoring</a>
+    <a href="#join" class="nav-cta">Join</a>
+  </nav>
+
+  <a class="scroll-cue" href="#about" aria-label="Scroll to About">
+    <span>scroll</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</header>
+
+<!-- Small screens get this instead of the link row: five links plus a logo
+     will not fit in a phone-width bar. It sits outside the hero so it can
+     paint above the open menu. -->
+<button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
+  <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+  <span class="sr-only">Menu</span>
+</button>
+
+<div class="mobile-menu" id="mobile-menu" hidden>
+  <nav aria-label="Mobile">
+    <a href="#about">About</a>
+    <a href="#events">Events</a>
+    <a href="#projects">Projects</a>
+    <a href="#tutoring">Tutoring</a>
+    <a href="#join">Join</a>
+  </nav>
+</div>
+
+<!-- Holds the space the fixed hero would have taken. -->
+<div class="hero-spacer" id="hero-spacer" aria-hidden="true"></div>
+
+<main>
+  <section class="section section-dark" id="about">
+    <div class="wrap">
+      <p class="eyebrow reveal">01 &mdash; About</p>
+      <h2 class="reveal">Physics made fun</h2>
+      <div class="two-col">
+        <div class="reveal">
+          <p class="lead">
+            We're a club at Amador Valley High School for anyone curious about the mysteries of the universe, whether you're a student in AP Physics C or just someone who is just starting out.
+          </p>
+          <p>
+            We usually have demos or other fun activities at our meetings, such as presentations by guest speakers, competition prep, and teaching things in physics the school doesn't teach you. 
+          </p>
+        </div>
+        <ul class="facts reveal">
+          <li><span>Meets</span><strong>Every other Thursday at lunch</strong></li>
+          <li><span>Where</span><strong>Room R210 (Mrs. Barnett's classroom)</strong></li>
+          <li><span>Open to</span><strong>Everyone (No physics background required!)</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-photo" id="events">
+    <div class="wrap">
+      <p class="eyebrow reveal">02 &mdash; What we do</p>
+      <h2 class="reveal">Four main things:</h2>
+      <div class="cards">
+        <article class="card reveal">
+          <h3>Biweekly meetings</h3>
+          <p>Demos, fun problems, and presentations. We've had wind tunnels, hovercrafts, the physics of sports, video games, and much, much more.</p>
+        </article>
+
+        <article class="card reveal">
+          <h3>Competitions</h3>
+          <p>We offer prep for Physics Bowl and the F=ma exam, as well as the Berkeley Physics Tournament (new!).</p>
+          <a class="card-link" href="https://forms.gle/SSDL6gwyzXCN218k8" target="_blank" rel="noopener">Register for the AAPT Photo Contest</a>
+        </article>
+        <article class="card reveal">
+          <h3>Guest talks</h3>
+          <p>Researchers, engineers, and others on what physics actually looks like after
+             high school.</p>
+          </article>
+
+        <article class="card reveal">
+          <h3>Food</h3>
+          <p>We will most likely have snacks at our meetings.</p>
+        </article>
+      </div>
+
+      <figure class="feature reveal">
+        <img src="assets/images/wind-tunnel.jpg" width="1017" height="560" loading="lazy"
+             alt="Airflow streamlines bending over a car in a wind tunnel, with the club's seal mascot in the driver's seat">
+        <!-- EDIT: change this caption if the image is from a different meeting -->
+        <figcaption>Airflow over a car, from a meeting on aerodynamics. Yes, that's our seal driving.</figcaption>
+      </figure>
+
+      <div class="callout reveal">
+        <div>
+          <h3>Something you want us to cover?</h3>
+          <p>We take requests. Drop your idea for a future meeting in the interest form.</p>
+        </div>
+        <a class="btn btn-ghost" href="https://forms.gle/8EWQwZfs6oMQuVVg8" target="_blank" rel="noopener">Share an idea &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PROJECTS ============================ -->
+  <section class="section section-mid" id="projects">
+    <div class="wrap">
+      <p class="eyebrow reveal">03 &mdash; Projects</p>
+      <h2 class="reveal">Things members have worked on...</h2>
+      <div class="cards">
+        <article class="card card-project reveal">
+          <span class="tag">Simulations</span>
+          <h3>Modeling things computationally</h3>
+          <p>The three-body problem, a wormhole, a black hole, Project Hail Mary's time dilation, and the double pendulum</p>
+        </article>
+        <article class="card card-project reveal">
+          <span class="tag">Experiments</span>
+          <h3>The double slit experiment</h3>
+          <p>See quantum mechanics in action, when light behaves like a wave.</p>
+        </article>
+        <article class="card card-project reveal">
+          <span class="tag">Theory</span>
+          <h3>Mathematics behind physics</h3>
+          <p>Newton's laws of motion, the conservation of energy, electricity and magnetism, and so much more.</p>
+        </article>
+      </div>
+
+      <h3 class="gallery-heading reveal">Some of what came out of it</h3>
+      <div class="gallery">
+        <figure class="gallery-item reveal">
+          <img src="assets/images/black-hole.jpg" width="1200" height="675" loading="lazy"
+               alt="Rendered black hole: a dark sphere ringed by a glowing accretion disk warped over and under itself">
+          <figcaption>A black hole, with its accretion disk lensed around the far side</figcaption>
+        </figure>
+        <figure class="gallery-item reveal">
+          <img src="assets/images/wormhole.jpg" width="1200" height="734" loading="lazy"
+               alt="Rendered wormhole: a dark spherical distortion bending a field of stars and the Milky Way around its edge">
+          <figcaption>A wormhole bending the starfield around its mouth</figcaption>
+        </figure>
+        <figure class="gallery-item gallery-item-plot reveal">
+          <img src="assets/images/double-pendulum.png" width="472" height="391" loading="lazy"
+               alt="Plot of a double pendulum: two straight segments joined at a pivot, captured at one instant">
+          <figcaption>The double pendulum, one frame of the simulation</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TUTORING ============================ -->
+  <section class="section section-dark" id="tutoring">
+    <div class="wrap">
+      <p class="eyebrow reveal">04 &mdash; Tutoring</p>
+      <h2 class="reveal">Stuck on something? We tutor.</h2>
+      <p class="lead reveal tutoring-lead">
+        Our tutoring sessions are usually after school and we have a dedicated team of tutors who can help you with your next test or competition preparation.
+      </p>
+      <div class="cards">
+        <article class="card reveal">
+          <h3>Get tutored</h3>
+          <p>Join the tutoring mailing list to recieve updates by mail (Discord works too) and we'll let you know when sessions are running.</p>
+          <a class="card-link" href="https://forms.gle/hvpdSboZgdPUvtD49" target="_blank" rel="noopener">Join the tutoring list</a>
+        </article>
+        <article class="card reveal">
+          <h3>Become a tutor</h3>
+          <p>Think you're comfortable with the material? Teach it to find out how well you know it.</p>
+          <a class="card-link" href="https://forms.gle/xZYMYdq6fUwLLKEY8" target="_blank" rel="noopener">Apply to tutor</a>
+        </article>
+        <article class="card reveal">
+          <h3>Review materials</h3>
+          <p>Some slides and a practice worksheet from a recent review session, free to work through
+             on your own.</p>
+          <span class="card-links">
+            <a class="card-link" href="https://docs.google.com/presentation/d/1ILDSFHGYT8hFRBXVA_qPVkxVEkSiS37jqy-9z_DILgc/edit" target="_blank" rel="noopener">Review slides</a>
+            <a class="card-link" href="https://docs.google.com/document/d/1mNli-kfdypYl0rBSYXYyFrj3afniEhe-GJNg8eVlwrU/edit" target="_blank" rel="noopener">Practice worksheet</a>
+          </span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ JOIN ============================ -->
+  <section class="section section-join" id="join">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow reveal">05 &mdash; Join</p>
+      <h2 class="reveal">Join our next meeting!</h2>
+      <p class="lead reveal">
+        Pull up pls.
+      </p>
+      <div class="join-actions reveal">
+        <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSefD-a1tl6UElNGGFV2sGXJLaUg4_CrLuz6Dt-f_qvddSw-mw/viewform" target="_blank" rel="noopener">Join the mailing list &rarr;</a>
+        <a class="btn btn-ghost" href="https://www.instagram.com/avphysics" target="_blank" rel="noopener">Instagram</a>
+        <a class="btn btn-ghost" href="https://discord.gg/teaMCW6qxH" target="_blank" rel="noopener">Discord</a>
+        <a class="btn btn-ghost" href="mailto:amadorvalleyphysics@gmail.com">Email us</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/images/logo.png" alt="" width="72" height="72">
+      <div>
+        <strong>AVHS Physics Club</strong>
+        <span>Amador Valley High School &middot; Pleasanton, CA</span>
+      </div>
+    </div>
+    <div class="footer-contact">
+      <h3>Contact</h3>
+      <p><a href="mailto:amadorvalleyphysics@gmail.com">amadorvalleyphysics@gmail.com</a></p>
+      <p class="footer-social">
+        <a href="https://www.instagram.com/avphysics" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://discord.gg/teaMCW6qxH" target="_blank" rel="noopener">Discord</a>
+      </p>
+    </div>
+    <p class="footer-copy">&copy; <span id="year">2026</span> AVHS Physics Club &middot; Student-run, not an official school publication.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

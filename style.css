@@ -1,0 +1,896 @@
+/* =========================================================================
+   AVHS Physics Club
+   Palette is pulled from the club logo (lavender #B6AFFF, coral #E27474) and
+   deepened along the same hue so the light logo always pops off the purple.
+   ========================================================================= */
+
+:root {
+  --lavender:    #B4ADFF;  /* the logo's own purple — used for text/accents only */
+  --purple-300:  #8E84F5;
+  --purple-500:  #6456D2;
+  --purple-600:  #493DA4;  /* hero wash + top bar */
+  --purple-700:  #3A3082;
+  --purple-800:  #2D2565;
+  --purple-900:  #201B46;
+  --purple-950:  #16132F;
+  --ink:         #131122;
+  --coral:       #E17D7A;
+  --paper:       #F2F0FF;
+  --muted:       #B9B3D8;
+
+  --font-display: "Fredoka", "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-body:    "Outfit", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --wrap: 1100px;
+
+  /* Hero geometry. These live on :root because the menu button sits outside
+     the hero (it has to paint above the menu overlay) but must line up with
+     the bar exactly. Breakpoints override them here, not on .hero. */
+  --bar: 76px;            /* collapsed bar height */
+  --pad: 26px;            /* side padding when collapsed */
+  /* Scaled to viewport height, not just width: the hero has to fit a logo, a
+     title, a multi-line quote and the scroll cue without them meeting, and a
+     short laptop screen is the tight case. */
+  --logo-max: clamp(140px, 25vh, 300px);
+  --logo-min: 52px;
+  --title-max: clamp(32px, 5.6vh, 62px);
+  --title-min: 21px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+::selection { background: var(--purple-500); color: #fff; }
+
+/* =========================================================================
+   HERO → TOP BAR
+   Everything below is driven by one variable: --p, the scroll progress from
+   0 (full-screen hero) to 1 (collapsed bar). script.js writes it each frame.
+   ========================================================================= */
+
+.hero {
+  --p: 0;                 /* scroll progress, 0 → 1 */
+  --hero-h: 100vh;        /* expanded hero height */
+
+  /* One anchor drives the whole hero: the logo's centre point and its size.
+     Everything else is placed as a pixel offset from that anchor, so nothing
+     can drift into the logo part-way through the collapse. */
+  --size:   calc(var(--logo-max) - (var(--logo-max) - var(--logo-min)) * var(--p));
+  --logo-x: calc(50% - (50% - (var(--pad) + var(--logo-min) / 2)) * var(--p));
+  --logo-y: calc(38% + 12% * var(--p));
+
+  position: relative;   /* no-JS fallback: a normal block at the top of the page */
+  z-index: 100;
+  height: calc(var(--hero-h) - (var(--hero-h) - var(--bar)) * var(--p));
+  overflow: hidden;
+  background: var(--purple-950);
+  isolation: isolate;
+}
+
+.js .hero {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+@supports (height: 100svh) {
+  .hero { --hero-h: 100svh; }
+}
+
+/* The photograph underneath — fades out as the hero becomes a solid bar. */
+.hero-photo {
+  position: absolute;
+  inset: -20px;                       /* bleed, so the blur has no soft edge */
+  background: url("assets/images/background.png") center/cover no-repeat;
+  filter: blur(7px) saturate(0.85);
+  transform: scale(calc(1.06 - 0.06 * var(--p)));
+  opacity: calc(1 - var(--p));
+}
+
+/* The purple wash. Opacity runs from translucent to a fully solid bar. */
+.hero-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 18%, rgba(100, 86, 210, 0.55), transparent 65%),
+    linear-gradient(180deg, var(--purple-700), var(--purple-600) 55%, var(--purple-800));
+  opacity: calc(0.55 + 0.45 * var(--p));
+}
+
+/* Shadow that only appears once the bar has formed. */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(11, 8, 28, 0.45));
+  transform: translateY(100%);
+  opacity: var(--p);
+}
+
+/* ---------------------------------- logo --------------------------------- */
+/* Shrinks and travels from the middle of the hero to the left of the bar.
+   The wrapper owns position + size; the <img> owns the hover spin, so the two
+   transforms never fight each other. */
+.hero-logo {
+  position: absolute;
+  z-index: 3;
+  width: var(--size);
+  height: var(--size);
+  left: var(--logo-x);
+  top: var(--logo-y);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: drop-shadow(0 12px 30px rgba(11, 8, 28, 0.45));
+}
+
+.hero-logo img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Hover spin — the logo keeps turning for as long as you're on it. */
+.hero-logo:hover img,
+.hero-logo:focus-visible img {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.hero-logo:focus-visible {
+  outline: 3px solid var(--lavender);
+  outline-offset: 6px;
+}
+
+/* --------------------------------- titles -------------------------------- */
+/* Big title: sits directly under the logo, hands off early.
+   --title-line is its rendered height, used to stack the tagline beneath it. */
+.hero-title {
+  --title-line: calc(var(--title-max) * 1.12);
+  position: absolute;
+  z-index: 2;
+  left: var(--logo-x);
+  top: var(--logo-y);
+  margin: calc(var(--size) / 2 + 30px) 0 0;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 40px);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--title-max);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: #fff;
+  text-shadow: 0 6px 26px rgba(11, 8, 28, 0.5);
+  opacity: calc(1 - var(--p) * 3.2);   /* gone by p = 0.31 */
+}
+
+/* Bar title: parked a fixed distance to the right of the logo's centre, so it
+   tracks the logo instead of crossing it. Fades in after the big one leaves. */
+.bar-title {
+  position: absolute;
+  z-index: 2;
+  left: var(--logo-x);
+  top: var(--logo-y);
+  margin-left: calc(var(--size) / 2 + 14px);
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: var(--title-min);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: #fff;
+  /* Held back until the logo is nearly parked. It rides 14px off the logo's
+     edge the whole way, so on mid-width screens it would otherwise sweep
+     through the nav while the logo is still out in the middle. */
+  opacity: calc((var(--p) - 0.82) * 5.6);   /* full by p = 1 */
+}
+
+.bar-title-short { display: none; }
+
+/* -------------------------------- tagline -------------------------------- */
+.hero-tagline {
+  position: absolute;
+  z-index: 2;
+  left: var(--logo-x);
+  top: var(--logo-y);
+  margin: calc(var(--size) / 2 + 30px + var(--title-max) * 1.12 + 18px) 0 0;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 40px));
+  text-align: center;
+  font-size: 19px;
+  font-weight: 300;
+  color: #EDEAFF;
+  opacity: calc(1 - var(--p) * 3.2);
+  text-shadow: 0 2px 14px rgba(11, 8, 28, 0.5);
+}
+
+.hero-school {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C9C2F5;
+}
+
+.hero-quote {
+  display: block;
+  margin-top: 14px;
+}
+
+.quote-text {
+  display: block;
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.55;
+  quotes: "\201C" "\201D";
+  text-wrap: balance;   /* keeps a two-line quote from leaving one orphan word */
+}
+
+.quote-author {
+  display: block;
+  margin-top: 8px;
+  font-size: 14.5px;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: #C0B9E8;
+}
+
+.quote-author::before { content: "\2014\00a0"; }
+
+/* ---------------------------------- nav ---------------------------------- */
+/* The nav does not travel. It sits where the bar's centre line will be, so the
+   shrinking logo never has to pass through it on its way up. */
+.hero-nav {
+  position: absolute;
+  z-index: 3;
+  right: var(--pad);
+  top: calc(var(--bar) / 2);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.4vw, 18px);
+}
+
+.hero-nav a {
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: calc(19px - 2px * var(--p));
+  font-weight: 500;
+  text-decoration: none;
+  color: #EDEAFF;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.hero-nav a:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+
+.hero-nav .nav-cta {
+  background: var(--lavender);
+  color: var(--purple-900);
+  font-weight: 600;
+}
+
+.hero-nav .nav-cta:hover { background: #fff; color: var(--purple-900); }
+
+.hero-nav a:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 3px;
+}
+
+/* ----------------------------- mobile menu ------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Fixed and outside the hero on purpose: inside it, the hero's stacking
+   context (z-index 100) would trap the button underneath the open menu. */
+.nav-toggle {
+  display: none;   /* shown only at the narrow breakpoint, and only with JS */
+  position: fixed;
+  z-index: 200;
+  right: var(--pad);
+  top: calc(var(--bar) / 2);
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+  cursor: pointer;
+}
+
+.nav-toggle-bars {
+  display: block;
+  position: relative;
+  width: 20px;
+  height: 14px;
+}
+
+.nav-toggle-bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.nav-toggle-bars span:nth-child(1) { top: 0; }
+.nav-toggle-bars span:nth-child(2) { top: 6px; }
+.nav-toggle-bars span:nth-child(3) { top: 12px; }
+
+/* Bars fold into an X while the menu is open. */
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 3px;
+}
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Fully opaque: at 0.97 the hero's white title still read through it. */
+  background: linear-gradient(170deg, var(--purple-900), var(--purple-950) 72%);
+}
+
+.mobile-menu[hidden] { display: none; }
+
+.mobile-menu nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.mobile-menu a {
+  padding: 13px 34px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+}
+
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible { background: rgba(180, 173, 255, 0.16); }
+
+/* ------------------------------- scroll cue ------------------------------ */
+.scroll-cue {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  color: #DCD7FF;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  /* Only meaningful at the very top, and the hero's bottom edge races up past
+     the tagline as it collapses — so this leaves early. */
+  opacity: calc(1 - var(--p) * 12);
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.scroll-cue svg { width: 24px; height: 24px; }
+
+@keyframes bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, 7px); }
+}
+
+/* Once the bar has formed, retire the pieces that faded out so they can't be
+   clicked or reached by the keyboard. */
+.hero.is-bar .hero-title,
+.hero.is-bar .hero-tagline,
+.hero.is-bar .scroll-cue { visibility: hidden; }
+
+/* Reserves the scroll distance the fixed hero consumes — only needed when the
+   hero has actually been lifted out of the flow. */
+.hero-spacer { display: none; height: 100vh; }
+.js .hero-spacer { display: block; }
+@supports (height: 100svh) { .hero-spacer { height: 100svh; } }
+
+/* =========================================================================
+   SECTIONS
+   ========================================================================= */
+
+.section {
+  position: relative;
+  padding: 120px 24px;
+  scroll-margin-top: 76px;
+}
+
+.section-dark  { background: var(--ink); }
+.section-mid   { background: var(--purple-900); }
+
+.section-photo {
+  background: url("assets/images/background.png") center/cover no-repeat fixed;
+}
+
+.section-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(22, 19, 47, 0.93), rgba(45, 37, 101, 0.90));
+}
+
+/* The black hole render is nearly black except for one blazing accretion disk,
+   so this wash is light enough to let the disk burn through and still hold the
+   text. */
+/* Tall enough that "cover" shows the black hole rather than a thin slice
+   of it, and vertically centred so the content sits over the glow. */
+.section-join {
+  display: flex;
+  align-items: center;
+  min-height: min(76vh, 620px);
+  background: url("assets/images/blue-black-hole.jpg") center/cover no-repeat;
+}
+
+.section-join::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    /* pocket of shade under the text, so the accretion glow can stay bright
+       everywhere else without costing legibility */
+    radial-gradient(64% 74% at 48% 50%, rgba(18, 15, 40, 0.58), transparent 78%),
+    linear-gradient(180deg, rgba(22, 19, 47, 0.52), rgba(30, 25, 68, 0.26) 45%, rgba(22, 19, 47, 0.70)),
+    linear-gradient(115deg, rgba(73, 61, 164, 0.30), rgba(73, 61, 164, 0.03) 68%);
+}
+
+.section-photo > .wrap,
+.section-join > .wrap { position: relative; z-index: 1; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; }
+.wrap-narrow { max-width: 680px; text-align: center; }
+
+.eyebrow {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--lavender);
+}
+
+.section h2 {
+  margin: 0 0 40px;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.lead { font-size: 20px; font-weight: 300; color: #E6E2FF; }
+
+.section p { color: var(--muted); }
+.section .lead { color: #E6E2FF; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+/* ------------------------------ fact list -------------------------------- */
+.facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(180, 173, 255, 0.22);
+}
+
+.facts li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(180, 173, 255, 0.22);
+}
+
+.facts span {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--purple-300);
+}
+
+.facts strong { font-weight: 500; text-align: right; }
+
+/* -------------------------------- cards ---------------------------------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  padding: 30px 26px;
+  border: 1px solid rgba(180, 173, 255, 0.20);
+  border-radius: 16px;
+  background: rgba(180, 173, 255, 0.055);
+  transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(180, 173, 255, 0.5);
+  background: rgba(180, 173, 255, 0.10);
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.card p { margin: 0; font-size: 16px; }
+
+/* Link at the foot of a card. */
+.card-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--lavender);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Non-breaking space, then the arrow: keeps the arrow welded to the last word
+   when a long label wraps onto a second line. */
+.card-link::after { content: "\00a0\2192"; }
+
+.card-link:hover {
+  color: #fff;
+  border-bottom-color: currentColor;
+}
+
+.card-link:focus-visible {
+  outline: 2px solid var(--lavender);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Two or more stacked links in one card. */
+.card-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.card-links .card-link:not(:first-child) { margin-top: 0; }
+
+/* ------------------------- images: feature + gallery ---------------------- */
+.feature {
+  margin: 30px 0 0;
+}
+
+.feature img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(180, 173, 255, 0.22);
+}
+
+.feature figcaption,
+.gallery figcaption {
+  margin-top: 12px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.feature figcaption { text-align: center; }
+
+.gallery-heading {
+  margin: 56px 0 20px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--lavender);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 22px;
+}
+
+.gallery-item { margin: 0; }
+
+.gallery-item img {
+  width: 100%;
+  height: auto;   /* without this the height="..." attribute beats aspect-ratio */
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid rgba(180, 173, 255, 0.22);
+  background: #000;
+}
+
+/* The double pendulum is a plot on a white ground, not a render. Show it whole
+   on its own light panel so the white reads as the plot, not as a blown-out
+   image sitting in a dark grid. */
+.gallery-item-plot img {
+  object-fit: contain;
+  padding: 10px;
+  background: #F7F6FF;
+}
+
+/* ------------------------------- callout --------------------------------- */
+.callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 26px;
+  padding: 28px 32px;
+  border: 1px solid rgba(180, 173, 255, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgba(100, 86, 210, 0.22), rgba(180, 173, 255, 0.07));
+}
+
+.callout > div { flex: 1 1 320px; }
+
+.callout h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.callout p { margin: 0; font-size: 16px; max-width: 60ch; }
+
+.callout .btn { flex: 0 0 auto; padding: 13px 26px; font-size: 16px; }
+
+.tutoring-lead { margin: -22px 0 36px; max-width: 62ch; }
+
+.tag {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: rgba(225, 125, 122, 0.16);
+  color: var(--coral);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------- join ---------------------------------- */
+.join-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 15px 32px;
+  border: 2px solid var(--lavender);
+  border-radius: 10px;
+  background: var(--lavender);
+  color: var(--purple-900);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover { background: #fff; border-color: #fff; transform: translateY(-2px); }
+
+/* Not fully transparent: these sit over the black hole's accretion glow, and
+   white-on-white left the label unreadable. */
+.btn-ghost {
+  background: rgba(16, 13, 38, 0.46);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  color: #fff;
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.14); border-color: #fff; color: #fff; }
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+
+.footer {
+  padding: 56px 24px 34px;
+  background: #0C0A1A;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  max-width: var(--wrap);
+  margin: 0 auto;
+}
+
+.footer-brand { display: flex; align-items: center; gap: 18px; }
+.footer-brand strong { display: block; font-family: var(--font-display); font-size: 19px; }
+.footer-brand span { font-size: 14px; color: var(--muted); }
+
+.footer-contact { text-align: right; }
+.footer-contact h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purple-300);
+}
+.footer-contact p { margin: 0; }
+.footer-contact a { color: var(--lavender); text-decoration: none; }
+.footer-contact a:hover { text-decoration: underline; }
+
+.footer-social {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 4px !important;
+}
+
+.footer-copy {
+  flex-basis: 100%;
+  margin: 12px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(180, 173, 255, 0.14);
+  text-align: center;
+  font-size: 13px;
+  color: #726C99;
+}
+
+/* =========================================================================
+   SCROLL REVEAL
+   ========================================================================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(42px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal.in-view { opacity: 1; transform: none; }
+
+/* Stagger the cards within a row. */
+.cards .reveal:nth-child(2) { transition-delay: 0.09s; }
+.cards .reveal:nth-child(3) { transition-delay: 0.18s; }
+.cards .reveal:nth-child(4) { transition-delay: 0.27s; }
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 860px) {
+  .two-col { grid-template-columns: 1fr; gap: 34px; }
+  .section { padding: 90px 22px; }
+  .footer-contact { text-align: left; }
+  .footer-social { justify-content: flex-start; }
+  /* Fixed backgrounds are unreliable on mobile — scroll it normally. */
+  .section-photo { background-attachment: scroll; }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --bar: 68px;
+    --pad: 16px;
+    --logo-max: min(25vh, 190px);
+    --logo-min: 44px;
+    --title-max: min(5.6vh, 34px);
+    --title-min: 18px;
+  }
+  /* .hero-tagline's font-size does not reach .quote-text, which sets its own. */
+  .quote-text { font-size: 17px; }
+  .bar-title-full  { display: none; }
+  .bar-title-short { display: inline; }
+  .hero-tagline { font-size: 16px; }
+  .hero-nav { display: none; }
+  .js .nav-toggle { display: flex; }
+  /* Without JS the button can't open anything, so fall back to the links,
+     wrapped — the hero is a static block in that case, so there's room. */
+  html:not(.js) .hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100% - 2 * var(--pad));
+  }
+  .section { scroll-margin-top: 68px; }
+}
+
+/* Below this the five nav links need the whole bar — the logo carries the
+   brand there. (The full <h1> is still shown while the hero is expanded.) */
+@media (max-width: 860px) {
+  .bar-title { display: none; }
+}
+
+@media (max-width: 420px) {
+  :root { --logo-max: min(25vh, 160px); }
+}
+
+/* Landscape phones and other very short viewports: no room for a multi-line
+   quote between the title and the scroll cue, so the tagline steps out. */
+@media (max-height: 660px) {
+  .hero-tagline { display: none; }
+}
+
+/* Short phones (667px tall and similar): there is room for the quote or the
+   scroll cue, not both. The cue is decorative and the page obviously scrolls,
+   so the quote wins. */
+@media (max-height: 700px) and (max-width: 720px) {
+  .scroll-cue { display: none; }
+}
+
+/* =========================================================================
+   REDUCED MOTION
+   The hero collapse is scroll-linked (not an animation) so it stays; the
+   decorative loops and reveal slides do not.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .scroll-cue { animation: none; }
+  .hero-logo:hover img,
+  .hero-logo:focus-visible img { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .card:hover { transform: none; }
+}

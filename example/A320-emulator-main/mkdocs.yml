@@ -1,0 +1,24 @@
+site_name: A320 Documentation
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  extra_css:
+    - assets/custom.css
+  palette:
+    scheme: default
+    primary: blue
+    accent: indigo
+extra_css:
+    - assets/custom.css
+extra:
+  font:
+    text: Roboto
+    code: Fira Code
+nav:
+  - Getting Started: getting-started.md
+  - About: about.md
+  - Systems Overview: systems-overview.md
+  - Procedures: procedures.md
+  - Tips & Tricks: tips.md
